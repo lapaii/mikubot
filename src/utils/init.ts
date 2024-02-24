@@ -30,7 +30,7 @@ export async function loadApplicationCommands(client: LilybirdClient): Promise<v
 	await client.rest.bulkOverwriteGlobalApplicationCommand(client.user.id, slashCommands);
 }
 
-export async function loadMessageCommands(client: LilybirdClient): Promise<void> {
+export async function loadMessageCommands(): Promise<void> {
 	const temp: Array<Promise<DefaultMessageCommand>> = [];
 
 	const files = await readdir("./src/messageCommands", { recursive: true });
