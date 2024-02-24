@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "target": "ESNext",
+        "module": "Node16",
+        "moduleResolution": "Node16",
+        "outDir": "dist",
+        "baseUrl": ".",
+        "strict": true,
+        "types": [
+            "./globals",
+            "bun-types"
+        ]
+    },
+    "include": [
+        "src/**/*"
+    ]
+}

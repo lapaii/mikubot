@@ -1,0 +1,19 @@
+{
+  "name": "mikubot",
+  "description": "yet another osu! discord bot",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./src/index.ts",
+  "scripts": {
+    "start": "bun ."
+  },
+  "dependencies": {
+    "@lilybird/handlers": "^0.3.1",
+    "@lilybird/jsx": "^0.2.0",
+    "lilybird": "^0.5.2"
+  },
+  "devDependencies": {
+    "bun-types": "^1.0.29",
+    "typescript": "^5.3.3"
+  }
+}
