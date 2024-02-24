@@ -4,6 +4,6 @@ declare module "bun" {
 		CLIENT_ID: number,
 		GUILD_ID: number,
 		OSU_CLIENT_ID: number,
-		OSU_CLIENT_SECRET: string;
+		OSU_CLIENT_SECRET: string,
     }
 }
