@@ -1,17 +1,25 @@
 {
     "compilerOptions": {
-        "target": "ESNext",
-        "module": "Node16",
-        "moduleResolution": "Node16",
-        "outDir": "dist",
-        "baseUrl": ".",
-        "strict": true,
-        "types": [
-            "./globals",
-            "bun-types"
-        ]
-    },
-    "include": [
-        "src/**/*"
-    ]
-}
+      "lib": ["ESNext"],
+      "module": "esnext",
+      "target": "esnext",
+      "moduleResolution": "bundler",
+      "moduleDetection": "force",
+      "allowImportingTsExtensions": true,
+      "noEmit": true,
+      "composite": true,
+      "strict": true,
+      "downlevelIteration": true,
+      "skipLibCheck": true,
+      "jsx": "react-jsx",
+      "jsxImportSource": "@lilybird/jsx",
+      "allowSyntheticDefaultImports": true,
+      "forceConsistentCasingInFileNames": true,
+      "allowJs": true,
+      "types": [
+          "bun-types", // add Bun global
+          "./globals"
+      ]
+    }
+  }
+  

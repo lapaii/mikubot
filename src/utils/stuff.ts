@@ -1,18 +1,18 @@
-interface mods {
-	[index: number]: {
-		[acronym: string]: string;
-	}
+import type { Mod } from "osu-api-extended/dist/types/mods.js";
+
+export function generateModString(mods: Array<Mod>): string {
+    let modString = "";
+    for (let index = 0; index < mods.length; index++) modString += mods[index].acronym;
+
+    return modString;
 }
 
-export function generateModString(mods: mods) {
-	let modString = '';
-	for (const mod in mods) {
-		modString = modString + mods[mod]['acronym'];
-	}
-
-	return modString;
+export function rgbInt(r: number, g: number, b: number): number {
+    return 65536 * r + 256 * g + b;
 }
 
-export function rgbInt(r: number, g: number, b: number ): number {
-	return 65536 * r + 256 * g + b;
+export function generateGradeString(passedObjects: number, perfectCombo: number, rank: string): string {
+    const percentPlayed = passedObjects / perfectCombo * 100;
+    if (percentPlayed === 100) return rank;
+    return `${rank} (${percentPlayed.toFixed(2)}%)`;
 }

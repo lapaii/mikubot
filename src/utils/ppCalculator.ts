@@ -1,25 +1,29 @@
-import { tools } from "osu-api-extended";
-import { request } from "./request.js";
+import { getMapData } from "./getMap.ts";
 import { Beatmap, Calculator } from "rosu-pp";
+import type { PpCalc, PpCalcResult } from "../types/ppcalc";
 
-interface ppCalc {
-	id: number,
-	mods: number,
-	num300s: number,
-	num100s: number,
-	num50s: number,
-	numMiss: number,
-	combo: number,
-}
+export async function calculatePP({ id, mods, num300s, num100s, num50s, numMiss, combo, maxCombo }: PpCalc): Promise<PpCalcResult> {
+    const mapDownload = await getMapData(id);
 
-export async function calculatePP({ id, mods, num300s, num100s, num50s, numMiss, combo }: ppCalc) {
-	const mapDownload = await request(`https://osu.ppy.sh/osu/${id}`);
+    const map = new Beatmap().fromContent(mapDownload);
 
-	const map = new Beatmap().fromContent(mapDownload);
+    const calc = new Calculator();
 
-	const calc = new Calculator();
+    const current = calc.mode(0).n300(num300s).n100(num100s).n50(num50s)
+        .nMisses(numMiss)
+        .mods(mods)
+        .combo(combo)
+        .performance(map);
 
-	const current = calc.n300(num300s).n100(num100s).n50(num50s).nMisses(numMiss).mods(mods).combo(combo).performance(map);
+    let ifFc = undefined;
+    if ("effectiveMissCount" in current) {
+        if ("effectiveMissCount" in current && current.effectiveMissCount > 0) {
+            ifFc = calc.mode(0).n300(num300s + numMiss).n100(num100s).n50(num50s)
+                .nMisses(0)
+                .combo(maxCombo)
+                .performance(map);
+        }
+    }
 
-	console.log(`${current.pp}`);
+    return { current, ifFc };
 }

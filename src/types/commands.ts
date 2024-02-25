@@ -1,4 +1,4 @@
-import { Client, POSTApplicationCommandStructure, Interaction, ApplicationCommandData, Message } from "lilybird";
+import type { Client, POSTApplicationCommandStructure, Interaction, ApplicationCommandData, Message } from "lilybird";
 
 export interface MessageCommand {
     name: string;
@@ -15,9 +15,9 @@ export interface SlashCommand {
 }
 
 export interface DefaultSlashCommand {
-	default: SlashCommand;
+    default: SlashCommand;
 }
 
 export interface DefaultMessageCommand {
-	default: MessageCommand;
+    default: MessageCommand;
 }
