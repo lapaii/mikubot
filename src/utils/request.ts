@@ -1,25 +1,24 @@
-import http from 'http'
+import https from "https";
 
 const timeoutMs = 60000;
 
-export const request = (url: string): Promise<any> => {
-	return new Promise((resolve, reject) => {
-		const req = http.request(url, { method: "GET" }, (response) => {
-			const chunks: any[] = [];
-			
-			response.on('data', (chunk: any) => chunks.push(chunk));
-			response.on('end', async () => {
-				
-				const data = Buffer.concat(chunks).toString();
-				resolve(data);
-			});
-		}).on('error', reject);
-		
-		req.setTimeout(timeoutMs, () => {
-			req.destroy();
-			reject(new Error(`Request to ${url} time out after ${timeoutMs}ms`));
-		});
-		
-		req.end();
-	});
-};
+export async function request(url: string): Promise< string> {
+    return new Promise(function (resolve, reject) {
+        const req = https.request(url, { method: "GET" }, function (response) {
+            const chunks: Array<any> = [];
+
+            response.on("data", function (chunk: any) { chunks.push(chunk); });
+            response.on("end", function () {
+                const data = Buffer.concat(chunks).toString();
+                resolve(data);
+            });
+        }).on("error", reject);
+
+        req.setTimeout(timeoutMs, function () {
+            req.destroy();
+            reject(new Error(`request to ${url} timedout after ${timeoutMs}ms`));
+        });
+
+        req.end();
+    });
+}

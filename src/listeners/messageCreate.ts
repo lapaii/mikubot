@@ -1,42 +1,41 @@
-import type { Client, Message } from "lilybird";
-import { commandAliases, messageCommands } from "src/utils/init.js";
+import { commandAliases, messageCommands } from "../utils/init";
+import type { Message } from "lilybird";
 
 export default {
-	event: "messageCreate",
-	run: async (message: Message) => {
-		const { content, guildId, client, author } = message;
-		
-		if (!content || !guildId || author.bot) return;
-		const server = await client.rest.getGuild(guildId);
+    event: "messageCreate",
+    run: async (message: Message) => {
+        const { content, guildId, client, author } = message;
 
-		const channel = await message.fetchChannel();
-		if (!channel.isText()) return;
+        if (!content || !guildId || author.bot) return;
 
-		const prefix = ";";
-		if (!content.startsWith(prefix)) return;
+        const channel = await message.fetchChannel();
+        if (!channel.isText()) return;
 
-		const args = content.slice(prefix.length).trim().split(/ +/g);
-		let commandName = args.shift()?.toLowerCase();
-		if (!commandName) return;
+        const prefix = ";";
+        if (!content.startsWith(prefix)) return;
 
-		const alias = commandAliases.get(commandName);
-		const commandDefault = alias ? messageCommands.get(alias) : messageCommands.get(commandName);
+        const args = content.slice(prefix.length).trim().split(/ +/g);
+        let commandName = args.shift()?.toLowerCase();
+        if (!commandName) return;
 
-		let index: number | undefined;
-		const match = (/(\D+)(\d+)/).exec(commandName);
-		if (match) {
-			const [, extractedCommandName, extractedNumber] = match;
-			commandName = extractedCommandName;
-			index = parseInt(extractedNumber) - 1;
-		}
+        const alias = commandAliases.get(commandName);
+        const commandDefault = alias ? messageCommands.get(alias) : messageCommands.get(commandName);
 
-		if (!commandDefault) return;
-		const { default: command } = commandDefault;
+        let index: number | undefined;
+        const match = (/(\D+)(\d+)/).exec(commandName);
+        if (match) {
+            const [, extractedCommandName, extractedNumber] = match;
+            commandName = extractedCommandName;
+            index = parseInt(extractedNumber) - 1;
+        }
 
-		command.run({ client, message, args, prefix, index, commandName }).catch(async (error: Error) => {
-			console.log(`[error] error in message command ${command.name}: ${error.stack}`);
-		});
+        if (!commandDefault) return;
+        const { default: command } = commandDefault;
 
-		return;
-	}
-}
+        command.run({ client, message, args, prefix, index, commandName }).catch((error: Error) => {
+            console.log(`[error] error in message command ${command.name}: ${error.stack}`);
+        });
+
+        return;
+    }
+};
