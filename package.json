@@ -9,8 +9,9 @@
   },
   "dependencies": {
     "@lilybird/handlers": "^0.3.1",
-    "@lilybird/jsx": "^0.2.0",
-    "lilybird": "^0.5.2"
+    "lilybird": "^0.5.2",
+    "osu-api-extended": "^2.8.3",
+    "rosu-pp": "^0.9.4"
   },
   "devDependencies": {
     "bun-types": "^1.0.29",
