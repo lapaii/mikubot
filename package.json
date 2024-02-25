@@ -9,6 +9,10 @@
   },
   "dependencies": {
     "@lilybird/handlers": "^0.3.1",
+    "@stylistic/eslint-plugin": "^1.6.2",
+    "eslint": "^8.57.0",
+    "eslint-import-resolver-typescript": "^3.6.1",
+    "eslint-plugin-import": "^2.29.1",
     "lilybird": "^0.5.2",
     "osu-api-extended": "^2.8.3",
     "rosu-pp": "^0.9.4"

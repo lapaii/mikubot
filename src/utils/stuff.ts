@@ -12,3 +12,7 @@ export function generateModString(mods: mods) {
 
 	return modString;
 }
+
+export function rgbInt(r: number, g: number, b: number ): number {
+	return 65536 * r + 256 * g + b;
+}

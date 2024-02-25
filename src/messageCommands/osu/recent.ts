@@ -5,6 +5,7 @@ import { tools, v2 } from 'osu-api-extended';
 import { name, id } from "osu-api-extended/dist/utility/mods.js";
 import { calculatePP } from "src/utils/ppCalculator.js";
 import { request } from "src/utils/request.js";
+import { rgbInt } from "src/utils/stuff.js";
 
 // THIS IS A MESSSSSSSSSSSS
 // TODO: NEEDS REWRITE !!! IT LOOKS SO UGLYYYYYYYYYY
@@ -26,11 +27,13 @@ async function run({ message, args }: { message: Message, args: Array<string> })
 	console.log(recentScore[0])
 
 	if (recentScore[0] == undefined) {
-		await message.reply({ embeds: [
-			{
-				title: `${username} has no recent plays`
-			}
-		]});
+		await message.reply({
+			embeds: [
+				{
+					title: `${username} has no recent plays`
+				}
+			]
+		});
 		return;
 	}
 
@@ -42,7 +45,7 @@ async function run({ message, args }: { message: Message, args: Array<string> })
 	const legacy_combo_increase = recentScore[0]['maximum_statistics']['legacy_combo_increase'] ? recentScore[0]['maximum_statistics']['legacy_combo_increase'] : 0;
 	const perfectCombo = recentScore[0]['maximum_statistics']['great'] + legacy_combo_increase;
 
-	const pp = calculatePP({ id: recentScore[0]['beatmap_id'], mods: recentScore[0]['mods_id'], num300s, num100s, num50s, numMiss, combo: recentScore[0]['max_combo'] });
+	const pp = await calculatePP({ id: recentScore[0]['beatmap_id'], mods: recentScore[0]['mods_id'], num300s, num100s, num50s, numMiss, combo: recentScore[0]['max_combo'] });
 
 	const ifFcNum300s = num300s + numMiss;
 	console.log(`if fc: ${ifFcNum300s} / ${num100s} / ${num50s} / 0`);
@@ -57,20 +60,20 @@ async function run({ message, args }: { message: Message, args: Array<string> })
 	console.log(ifFcAcc.toFixed(2));
 
 	const ppCalc = await tools.pp.calculate(
-										recentScore[0]['beatmap_id'],
-										recentScore[0]['mods_id'],
-										recentScore[0]['max_combo'],
-										numMiss,
-										parseFloat((recentScore[0]['accuracy'] * 100).toFixed(2))
-									);
+		recentScore[0]['beatmap_id'],
+		recentScore[0]['mods_id'],
+		recentScore[0]['max_combo'],
+		numMiss,
+		parseFloat((recentScore[0]['accuracy'] * 100).toFixed(2))
+	);
 
 	const ppIfFc = await tools.pp.calculate(
-										recentScore[0]['beatmap_id'],
-										recentScore[0]['mods_id'],
-										perfectCombo,
-										0,
-										ifFcAcc
-									);
+		recentScore[0]['beatmap_id'],
+		recentScore[0]['mods_id'],
+		perfectCombo,
+		0,
+		ifFcAcc
+	);
 
 	let grade = '';
 	let percentPlayed = undefined;
@@ -87,16 +90,16 @@ async function run({ message, args }: { message: Message, args: Array<string> })
 	}
 
 	let ppText = '';
-		if (recentScore[0]['max_combo'] == (recentScore[0]['maximum_statistics']['great'] + recentScore[0]['maximum_statistics']['legacy_combo_increase'])) {
-			ppText = `${ppCalc['pp']['current']}`;
-		} else {
-			ppText = `${ppCalc['pp']['current'].toLocaleString()} (${ppCalc['pp']['fc'].toLocaleString()} for ${ifFcAcc}% fc)`;
-		}
-	
+	if (recentScore[0]['max_combo'] == (recentScore[0]['maximum_statistics']['great'] + recentScore[0]['maximum_statistics']['legacy_combo_increase'])) {
+		ppText = `${ppCalc['pp']['current']}`;
+	} else {
+		ppText = `${ppCalc['pp']['current'].toLocaleString()} (${ppCalc['pp']['fc'].toLocaleString()} for ${ifFcAcc}% fc)`;
+	}
+
 	await message.reply({
 		embeds: [
 			{
-				author: { name: `${details['username']} (#${details['rank_history']['data'][89]})`, url: `https://osu.ppy.sh/u/${details['id']}`},
+				author: { name: `${details['username']} (#${details['rank_history']['data'][89]})`, url: `https://osu.ppy.sh/u/${details['id']}` },
 				title: `${recentScore[0]['beatmapset']['title']} [${recentScore[0]['beatmap']['version']}] +${modsString} [${ppCalc['stats']['star']['pure']}*]`,
 				url: `${recentScore[0]['beatmap']['url']}`,
 				fields: [
@@ -107,7 +110,9 @@ async function run({ message, args }: { message: Message, args: Array<string> })
 					{ name: 'accuracy', value: `${(recentScore[0]['accuracy'] * 100).toFixed(2)}%`, inline: true },
 					{ name: 'hits', value: `${num300s.toLocaleString()} / ${num100s.toLocaleString()} / ${num50s.toLocaleString()} / ${numMiss.toLocaleString()}`, inline: true },
 				],
-				image: { url: `${recentScore[0]['beatmapset']['covers']['card@2x']}` }
+				image: { url: `${recentScore[0]['beatmapset']['covers']['card@2x']}` },
+				color: rgbInt(22, 145, 217),
+				timestamp: recentScore[0]['ended_at'],
 			},
 		],
 	});
