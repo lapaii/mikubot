@@ -72,7 +72,7 @@ export async function getOsuIdFromDiscord(discordUserId: string, usernameToLink:
     const userId = (await v2.user.details(usernameToLink)).id;
 
     if (userId) {
-        db.run(`INSERT OR REPLACE INTO userdata VALUES (${discordUserId}, ${userId}, 0)`);
+        db.run(`INSERT INTO userdata VALUES (${discordUserId}, ${userId})`);
         return userId;
     }
 
@@ -83,7 +83,7 @@ export async function getMapFromId(diffId: number): Promise<string> {
     const start = performance.now();
     const data: DatabaseMap | null = db.prepare("SELECT * FROM maps WHERE diffId = ?").get(diffId) as DatabaseMap | null;
 
-    if (data != null) {
+    if (data !== null) {
         console.log(`map ${diffId} already exists in db, decoding it`);
 
         const end = performance.now();
@@ -94,7 +94,7 @@ export async function getMapFromId(diffId: number): Promise<string> {
 
     const mapData = await getMapData(diffId);
 
-    db.run("INSERT OR REPLACE INTO maps VALUES (?, ?)", [diffId, mapData]);
+    db.run("INSERT INTO maps VALUES (?, ?)", [diffId, mapData]);
 
     return mapData;
 }
