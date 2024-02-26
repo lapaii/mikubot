@@ -64,7 +64,7 @@ export function readyDatabase(): void {
     console.log("database successfully up and configured");
 }
 
-export async function getOsuIdFromDiscord(discordUserId: string, usernameToLink: string): Promise<number> {
+export async function getOsuIdFromDiscord(discordUserId: string, usernameToLink: string, preferredMode?: number): Promise<number> {
     const data: DatabaseUser | null = db.prepare("SELECT * FROM userdata WHERE discordId = ?").get(discordUserId) as DatabaseUser | null;
 
     if (typeof data?.osuId === "number") return data.osuId;
@@ -72,8 +72,13 @@ export async function getOsuIdFromDiscord(discordUserId: string, usernameToLink:
     const userId = (await v2.user.details(usernameToLink)).id;
 
     if (userId) {
-        db.run(`INSERT INTO userdata VALUES (${discordUserId}, ${userId})`);
-        return userId;
+        if (preferredMode && preferredMode <= 3) {
+            db.run(`INSERT INTO userdata VALUES (${discordUserId}, ${userId}, ${preferredMode})`);
+            return userId;
+        } else if (!preferredMode) {
+            db.run(`INSERT INTO userdata VALUES (${discordUserId}, ${userId}, 0)`);
+            return userId;
+        }
     }
 
     return -1;
@@ -87,7 +92,7 @@ export async function getMapFromId(diffId: number): Promise<string> {
         console.log(`map ${diffId} already exists in db, decoding it`);
 
         const end = performance.now();
-        console.log(`loading map from db took ${(end - start) / 1000}s`);
+        console.log(`loading map from db took ${end - start} ms`);
 
         return data.data;
     }
@@ -95,6 +100,9 @@ export async function getMapFromId(diffId: number): Promise<string> {
     const mapData = await getMapData(diffId);
 
     db.run("INSERT INTO maps VALUES (?, ?)", [diffId, mapData]);
+
+    const end = performance.now();
+    console.log(`downloading and saving map to db took ${end - start} ms`);
 
     return mapData;
 }
