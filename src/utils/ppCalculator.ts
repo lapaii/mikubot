@@ -1,11 +1,11 @@
-import { getMapData } from "./getMap.ts";
+import { getMapFromId } from "./database";
 import { Beatmap, Calculator } from "rosu-pp";
 import type { PpCalc, PpCalcResult } from "../types/ppcalc";
 
 export async function calculatePP({ id, mods, num300s, num100s, num50s, numMiss, combo, maxCombo }: PpCalc): Promise<PpCalcResult> {
-    const mapDownload = await getMapData(id);
+    const mapData = await getMapFromId(id);
 
-    const map = new Beatmap().fromContent(mapDownload);
+    const map = new Beatmap().fromContent(mapData);
 
     const calc = new Calculator();
 
