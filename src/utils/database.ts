@@ -85,27 +85,16 @@ export async function getMapFromId(diffId: number): Promise<string> {
 
     if (data != null) {
         console.log(`map ${diffId} already exists in db, decoding it`);
-        const array = data.data.split(",");
-        const tempArray: Array<number> = [];
-        array.forEach(function (item) {
-            tempArray.push(Number(item));
-        });
-        const finalArray = new Uint8Array(tempArray);
-        const decoder = new TextDecoder();
 
         const end = performance.now();
         console.log(`loading map from db took ${(end - start) / 1000}s`);
 
-        return decoder.decode(finalArray);
+        return data.data;
     }
 
     const mapData = await getMapData(diffId);
 
-    const mapDataBlob = new Blob([mapData]);
-    const mapDataBuffer = Buffer.from(await mapDataBlob.arrayBuffer());
-    const mapData8Array = new Uint8Array(mapDataBuffer);
-
-    db.run(`INSERT OR REPLACE INTO maps VALUES (${diffId}, "${String(mapData8Array)}")`);
+    db.run("INSERT OR REPLACE INTO maps VALUES (?, ?)", [diffId, mapData]);
 
     return mapData;
 }
