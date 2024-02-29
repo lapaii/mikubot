@@ -11,8 +11,8 @@ export function rgbInt(r: number, g: number, b: number): number {
     return 65536 * r + 256 * g + b;
 }
 
-export function generateGradeString(passedObjects: number, perfectCombo: number, rank: string): string {
-    const percentPlayed = passedObjects / perfectCombo * 100;
+export function generateGradeString(passedObjects: number, objectCount: number, rank: string): string {
+    const percentPlayed = passedObjects / objectCount * 100;
     if (percentPlayed === 100) return rank;
-    return `${rank} (${percentPlayed.toFixed(2)}%)`;
+    return `F (${percentPlayed.toFixed(2)}%)`;
 }

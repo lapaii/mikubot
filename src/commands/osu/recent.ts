@@ -60,7 +60,8 @@ async function run(interaction: Interaction<ApplicationCommandData>): Promise<vo
     const modString = generateModString(mostRecentScore.mods);
 
     const passedObjects = num300s + num100s + num50s + numMiss;
-    const gradeString = generateGradeString(passedObjects, perfectCombo, mostRecentScore.rank);
+    const maxObjects = mostRecentScore.beatmap.count_circles + mostRecentScore.beatmap.count_sliders + mostRecentScore.beatmap.count_spinners;
+    const gradeString = generateGradeString(passedObjects, maxObjects, mostRecentScore.rank);
 
     await interaction.editReply({
         embeds: [
