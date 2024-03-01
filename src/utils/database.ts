@@ -64,7 +64,15 @@ export function readyDatabase(): void {
     console.log("database successfully up and configured");
 }
 
-export async function getOsuIdFromDiscord(discordUserId: string, usernameToLink: string, preferredMode?: number): Promise<number> {
+export function getOsuIdFromDiscord(discordUserId: string): number {
+    const data: DatabaseUser | null = db.prepare("SELECT * FROM userdata WHERE discordId = ?").get(discordUserId) as DatabaseUser | null;
+
+    if (data) return Number(data.osuId);
+
+    return -1;
+}
+
+export async function linkOsuToDiscord(discordUserId: string, usernameToLink: string, preferredMode?: number): Promise<number> {
     const data: DatabaseUser | null = db.prepare("SELECT * FROM userdata WHERE discordId = ?").get(discordUserId) as DatabaseUser | null;
 
     if (typeof data?.osuId === "number") return data.osuId;

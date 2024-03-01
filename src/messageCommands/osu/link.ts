@@ -1,4 +1,4 @@
-import { getOsuIdFromDiscord } from "../../utils/database";
+import { linkOsuToDiscord } from "../../utils/database";
 import type { MessageCommand } from "../../types/commands";
 import type { Message } from "lilybird";
 
@@ -11,7 +11,7 @@ export default {
 
 async function run({ message, args }: { message: Message, args: Array<string> }): Promise<void> {
     const { 0: usernameToLink } = args;
-    const userId = await getOsuIdFromDiscord(message.author.id, usernameToLink);
+    const userId = await linkOsuToDiscord(message.author.id, usernameToLink);
     if (userId >= 0) {
         await message.reply(`${usernameToLink} successfully linked!`);
         return;
