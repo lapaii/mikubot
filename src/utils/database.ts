@@ -26,7 +26,7 @@ const db = new Database("database.sqlite", { create: true });
 
 export function readyDatabase(): void {
     const tables = [
-        { name: "userdata", columns: ["discordId TEXT PRIMARY_KEY", "osuId TEXT", "prefMode INT"] },
+        { name: "userdata", columns: ["discordId TEXT PRIMARY_KEY", "osuId TEXT", "prefMode TEXT"] },
         { name: "maps", columns: ["diffId TEXT PRIMARY_KEY", "data BLOB"] }
     ];
 
@@ -64,7 +64,15 @@ export function readyDatabase(): void {
     console.log("database successfully up and configured");
 }
 
-export async function getOsuIdFromDiscord(discordUserId: string, usernameToLink: string, preferredMode?: number): Promise<number> {
+export function getOsuIdFromDiscord(discordUserId: string): number {
+    const data: DatabaseUser | null = db.prepare("SELECT * FROM userdata WHERE discordId = ?").get(discordUserId) as DatabaseUser | null;
+
+    if (data) return Number(data.osuId);
+
+    return -1;
+}
+
+export async function linkOsuToDiscord(discordUserId: string, usernameToLink: string, preferredMode: string): Promise<number> {
     const data: DatabaseUser | null = db.prepare("SELECT * FROM userdata WHERE discordId = ?").get(discordUserId) as DatabaseUser | null;
 
     if (typeof data?.osuId === "number") return data.osuId;
@@ -72,7 +80,7 @@ export async function getOsuIdFromDiscord(discordUserId: string, usernameToLink:
     const userId = (await v2.user.details(usernameToLink)).id;
 
     if (userId) {
-        if (preferredMode && preferredMode <= 3) {
+        if (preferredMode) {
             db.run(`INSERT INTO userdata VALUES (${discordUserId}, ${userId}, ${preferredMode})`);
             return userId;
         } else if (!preferredMode) {

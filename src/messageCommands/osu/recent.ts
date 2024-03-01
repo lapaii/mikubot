@@ -1,5 +1,6 @@
 import { calculatePP } from "../../utils/ppCalculator";
 import { generateGradeString, generateModString, rgbInt } from "../../utils/stuff";
+import { getOsuIdFromDiscord } from "../../utils/database";
 import { v2 } from "osu-api-extended";
 import type { Message } from "lilybird";
 import type { MessageCommand } from "../../types/commands";
@@ -16,7 +17,21 @@ async function run({ message, args }: { message: Message, args: Array<string> })
     const startTime = performance.now();
     // would test if user has linked account with db but not done yet
     const { 0: username } = args;
-    const details = await v2.user.details(username);
+    let userIdFromDb = 0;
+
+    if (!username) {
+        userIdFromDb = getOsuIdFromDiscord(message.author.id);
+        if (userIdFromDb === -1) {
+            await message.reply("no account linked! use the ;link [username] command to link an osu! account");
+            return;
+        }
+    }
+
+    const userToSearch = username ? username : userIdFromDb;
+
+    console.log(userToSearch);
+
+    const details = await v2.user.details(userToSearch);
     const recentScore = await v2.scores.user.category(details.id, "recent", { include_fails: true });
 
     const { 0: mostRecentScore } = recentScore;
